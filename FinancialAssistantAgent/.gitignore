@@ -1,0 +1,24 @@
+#Virtual environment
+.venv/
+venv/
+
+#Model files(too large for GitHub- 2.7 GB)
+models/
+
+#Database(contains personal data)
+financial_assistant.Database
+
+#logs
+logs/
+
+#Python cashe
+_pycashe_/
+*._pyc
+*.pyo
+
+#VS COde
+.vscode/
+
+#OS files
+Thumbs.db
+.DS_Store

@@ -1,0 +1,327 @@
+#include <SFML/Graphics.hpp>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+struct Question {
+    std::string questionText;
+    std::vector<std::string> options;
+    int correctIndex;
+};
+
+int main() {
+    
+
+    sf::RenderWindow window(sf::VideoMode({ 800, 600 }), "SFML Quiz Game");
+
+    sf::Font font;
+    if (!font.openFromFile("./Demo_ConeriaScript.ttf")) {
+        return -1; // Make sure arial.ttf is in your project folder
+    }
+
+    Question q = {
+        "What is the capital of France?",
+        { "1. Berlin", "2. Paris", "3. Madrid" },
+        1
+    };
+
+    sf::Texture text("./Bedroom image.JPG");
+    sf::Sprite sprite(text);
+
+
+    int selectedOption = 0;
+    bool answered = false;
+    bool isCorrect = false;
+
+
+    while (window.isOpen()) {
+        
+        while (const std::optional event = window.pollEvent())
+        {
+            // Window closed: exit
+            if (event->is<sf::Event::Closed>())
+                window.close();
+
+            // Handle key press events
+            if (!answered && event->is<sf::Event::KeyPressed>())
+            {
+                const auto* keyPressed = event->getIf<sf::Event::KeyPressed>();
+                if (keyPressed->code == sf::Keyboard::Key::Up)
+                    selectedOption = (selectedOption + q.options.size() - 1) % q.options.size();
+                else if (keyPressed->code == sf::Keyboard::Key::Down)
+                    selectedOption = (selectedOption + 1) % q.options.size();
+                else if (keyPressed->code == sf::Keyboard::Key::Enter)
+                {
+                    answered = true;
+                    isCorrect = (selectedOption == q.correctIndex);
+                }
+            }
+        }
+
+
+        window.clear(sf::Color(30, 30, 30));
+        window.draw(sprite);
+
+        // Ensure the font is loaded properly before using it
+        if (!font.openFromFile("Demo_ConeriaScript.ttf")) {
+            // Handle font loading error
+            return 1;
+        }
+
+        // Draw question
+        sf::Text questionText(font, q.questionText, 30);
+        
+        questionText.setFillColor(sf::Color::White);
+        questionText.setPosition({ 50.f, 50.f });  // Use floating-point vectors for positions
+        window.draw(questionText);
+
+        // Draw options
+        for (std::size_t i = 0; i < q.options.size(); ++i) {
+            sf::Text option(font, q.options[i],24);
+            
+            option.setPosition({ 100.f, 150.f + i * 50.f });  // Floating-point vectors for positions
+
+            if (i == selectedOption)
+                option.setFillColor(sf::Color::Yellow);
+            else
+                option.setFillColor(sf::Color::White);
+
+            window.draw(option);
+        }
+
+        // Show result
+        if (answered) {
+            sf::Text result(font, isCorrect ? "Correct!" : "Wrong!", 32);
+            
+            result.setFillColor(isCorrect ? sf::Color::Green : sf::Color::Red);
+            result.setPosition({ 50.f, 400.f });  // Floating-point vectors for positions
+            window.draw(result);
+        }
+
+       
+        window.display();
+    }
+
+    return 0;
+}
+
+
+
+
+#include <SFML/Graphics.hpp>
+#include <vector>
+#include <string>
+
+struct Question {
+    std::string text;
+    std::array<std::string, 3> options;
+    int correctIndex;
+};
+
+std::vector<Question> questions = {
+    {"What is 2+2?", {"3", "4", "5"}, 1},
+    {"Capital of France?", {"London", "Paris", "Berlin"}, 1},
+    {"Largest planet?", {"Earth", "Jupiter", "Mars"}, 1}
+};
+class Button {
+public:
+    Button(sf::Vector2f size, sf::Vector2f position, std::string text) {
+        shape.setSize(size);
+        shape.setPosition(position);
+        shape.setFillColor(sf::Color::Blue);
+
+        if (!font.loadFromFile("arial.ttf")) {
+            // Handle error
+        }
+        label.setFont(font);
+        label.setString(text);
+        label.setCharacterSize(24);
+        label.setPosition(position.x + 10, position.y + 10);
+    }
+
+    bool isClicked(sf::RenderWindow& window) {
+        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+        return shape.getGlobalBounds().contains(mousePos.x, mousePos.y);
+    }
+
+    void draw(sf::RenderWindow& window) {
+        window.draw(shape);
+        window.draw(label);
+    }
+
+private:
+    sf::RectangleShape shape;
+    sf::Text label;
+    sf::Font font;
+};
+int main() {
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Quiz Game");
+    int currentQuestion = 0;
+    std::array<Button, 3> buttons = {
+        Button({200, 50}, {100, 400}, "Option 1"),
+        Button({200, 50}, {300, 400}, "Option 2"),
+        Button({200, 50}, {500, 400}, "Option 3")
+    };
+
+    while (window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                window.close();
+
+            if (event.type == sf::Event::MouseButtonPressed) {
+                for (int i = 0; i < 3; i++) {
+                    if (buttons[i].isClicked(window)) {
+                        if (i == questions[currentQuestion].correctIndex) {
+                            if (++currentQuestion >= questions.size()) {
+                                // Show final score
+                                return 0;
+                            }
+                        }
+                        // Update question text and button labels
+                    }
+                }
+            }
+        }
+
+        window.clear();
+        // Draw question text
+        for (auto& button : buttons) {
+            button.draw(window);
+        }
+        window.display();
+    }
+    return 0;
+}
+
+
+
+
+
+#include <SFML/Graphics.hpp>
+#include <vector>
+#include <string>
+#include <array>
+
+struct Question {
+    std::string text;
+    std::array<std::string, 3> options;
+    int correctIndex;
+};
+
+std::vector<Question> questions = {
+    {"What is 2+2?", {"3", "4", "5"}, 1},
+    {"Capital of France?", {"London", "Paris", "Berlin"}, 1},
+    {"Largest planet?", {"Earth", "Jupiter", "Mars"}, 1}
+};
+
+class Button {
+public:
+    Button(sf::Vector2f size, sf::Vector2f position, std::string text) {
+        shape.setSize(size);
+        shape.setPosition(position);
+        shape.setFillColor(sf::Color::Blue);
+
+        if (!font.loadFromFile("Humongous of Eternity St.ttf")) {
+            // Handle error (use default font or exit)
+        }
+        label.setFont(font);
+        label.setString(text);
+        label.setCharacterSize(20);
+        label.setFillColor(sf::Color::White);
+        label.setPosition(
+            position.x + (size.x - label.getLocalBounds().width) / 2.f - 5,
+            position.y + (size.y - label.getLocalBounds().height) / 2.f - 10
+        );
+    }
+
+    void setText(const std::string& text) {
+        label.setString(text);
+    }
+
+    bool isClicked(sf::RenderWindow& window) {
+        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+        return shape.getGlobalBounds().contains(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
+    }
+
+    void draw(sf::RenderWindow& window) {
+        window.draw(shape);
+        window.draw(label);
+    }
+
+private:
+    sf::RectangleShape shape;
+    sf::Text label;
+    sf::Font font;
+};
+
+int main() {
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Quiz Game");
+
+    sf::Font font;
+    if (!font.loadFromFile("Humongous of Eternity St.ttf")) {
+        // Handle font loading error
+        return -1;
+    }
+
+    sf::Text questionText;
+    questionText.setFont(font);
+    questionText.setCharacterSize(28);
+    questionText.setFillColor(sf::Color::White);
+    questionText.setPosition(50, 100);
+
+    int currentQuestion = 0;
+
+    std::array<Button, 3> buttons = {
+        Button({200, 50}, {100, 400}, questions[0].options[0]),
+        Button({200, 50}, {300, 400}, questions[0].options[1]),
+        Button({200, 50}, {500, 400}, questions[0].options[2])
+    };
+
+    questionText.setString(questions[currentQuestion].text);
+
+    while (window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                window.close();
+
+            if (event.type == sf::Event::MouseButtonPressed) {
+                for (int i = 0; i < 3; ++i) {
+                    if (buttons[i].isClicked(window)) {
+                        if (++currentQuestion >= questions.size()) {
+                            questionText.setString("Quiz Completed!");
+                            for (auto& button : buttons) {
+                                button.setText("");
+                            }
+                        } else {
+                            questionText.setString(questions[currentQuestion].text);
+                            for (int j = 0; j < 3; ++j) {
+                                buttons[j].setText(questions[currentQuestion].options[j]);
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        window.clear();
+        window.draw(questionText);
+        for (auto& button : buttons) {
+            button.draw(window);
+        }
+        window.display();
+    }
+
+    return 0;
+}
+
+
+ auto q1 = std::make_shared<MultipleChoiceQuestion>(
+     "You have just find a crumpled note under the bed!" 
+     "Who was Evelyn trying to meet ? ",
+     std::vector<std::string>{"A private investigattor", "Her late Father's laywer", "Her childhood friend Jake","A journalist"},
+     1
+ );
